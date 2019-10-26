@@ -1,0 +1,34 @@
+<div class="container" style="width: 50%; margin-top: 32px;">
+    <div class="jumbotron">
+        <h3>Welcome</h3>
+        <h5>ZoomCatalog Echo Client</h5>
+    </div>
+    <div style="display: inline-block;">
+        <form>
+            <div style="width: 50%; float: left;">
+                <div class="form-group">
+                    <label for="request_method">Send Method</label>
+                    <select class="form-control" id="request_method">
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="PATCH">PATCH</option>
+                        <option value="GET">GET</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="json_data">JSON DATA</label>
+                    <textarea class="form-control" style="resize: none;" id="json_data" rows="5" placeholder='{"key1": "value1", "key2": "value2", "keyN": "valueN"}'></textarea>
+                </div>
+            </div>
+            <div class="" style="width: 45%; height: 100%; float: right;">
+                <div class="form-group">
+                    <label for="server_response">Server Response</label>
+                    <textarea style="width: 100%; height: 220px; resize: none;" id="server_response" disabled></textarea>
+                </div>
+            </div>
+            <button class="btn btn-primary" (click)=sendRequest()>Send Request</button>
+        </form>
+    </div>
+</div>
+
