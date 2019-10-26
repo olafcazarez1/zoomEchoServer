@@ -1,0 +1,31 @@
+=== Zoom Catalog Echo Service ===
+
+    This service has been developed using CherryPy FrameWork. The communication protocol is HTTP1.1;
+
+    The service has defined two routes:
+
+    /  -  Provide the name of the service and version.
+    /data  -  Provide a echo response a JSON Object with the properties method & data. The call is limited to application/json content, the expected response are:
+    * 200 - JSON
+    * 400 - Bad Request
+    * 405 - The requested Content-Type: application/json is not allow for GET/DELETE.
+    * 403 - The requested Content-Type: <string> is not allowed for this call.
+
+== Requirements ==
+
+    Python
+    CherryPy
+
+== How to execute the service ==
+   
+    python zoomd --config-file conf/zoom.conf
+
+== Config File ==
+
+    The config file is divided in two sections:
+    * global
+    ** error_file = <PATH>
+    ** access_file = <PATH>
+    *server
+    **port=<PORT>
+    **host=<HOST>

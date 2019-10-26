@@ -1,0 +1,63 @@
+#!/usr/bin/python
+import site, os; site.addsitedir(os.path.join(os.path.dirname(__file__), 'python'))
+
+import sys
+import argparse
+
+import ConfigParser, os
+import cherrypy
+
+# import logging
+# from logging import handlers
+
+from zoom.server import Server
+
+def main( ):
+	
+	parser = argparse.ArgumentParser(description=' Zoom Catalog - Echo Server', usage='%(prog)s [-h] [--config-file FILE]')
+	parser.add_argument('--config-file', type=str, default='/etc/zoom/conf/zoom.conf', help='Initial Access Values')
+	args = parser.parse_args()
+	
+	'''Load Config file'''
+	config = ConfigParser.ConfigParser()
+	config.readfp(open(args.config_file))
+	
+	''' Setting Web Configurations '''
+	cherrypy.server.socket_host = config.get('server', 'host')
+	cherrypy.server.socket_port = int(config.get('server', 'port'))
+
+	# cherrypy.config.update({'environment' : 'staging'})
+	
+	''' Setting Log Configurations '''
+	cherrypy.log.error_file = config.get('global', 'error_file' )
+	cherrypy.log.access_file = config.get('global', 'access_file' )
+
+	cherrypy.log.error_log.setLevel( 'DEBUG' )
+	cherrypy.log.access_log.setLevel( 'DEBUG' )
+
+	cherrypy.log.screen = True
+	cherrypy.log(traceback=True)
+
+	''' Init Service Process '''
+	zoom = Server()
+	
+	''' Setting URI for zoom '''
+	mapping = cherrypy.dispatch.RoutesDispatcher()
+	
+	mapping.mapper.explicit = False
+	mapping.connect('index',"/",controller=zoom, action='index', conditions=dict(method=['GET']))
+	
+	mapping.connect('get_data',"/data",controller=zoom, action='get_data', conditions=dict(method=['POST', 'PUT', 'DELETE', 'PATCH', 'GET', 'OPTIONS']))
+
+	'''Removing cache'''
+	cherrypy.lib.caching.get(invalid_methods=('POST','PUT','PATCH','DELETE','GET'))
+	'''Define Reply Template '''
+	cherrypy._cperror._HTTPErrorTemplate = '%(status)s - %(message)s'
+	
+	''' Start Engine Service '''
+	app = cherrypy.tree.mount(None,config={"/":{"request.dispatch": mapping}})
+	cherrypy.engine.start()
+	cherrypy.engine.block()
+	
+if __name__ == '__main__':
+	main()
